@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/style.css" />
+        <link
+            rel="shortcut icon"
+            type="image/x-icon"
+            href="./img/favicon.ico"
+        />
+        <title>All Articles</title>
+    </head>
+    <body>
+        <header>
+            <div class="logo-container">
+                <a href="/"
+                    ><img class="logo-img" src="./img/project-logo.png" alt=""
+                /></a>
+                <h4 class="logo-text">Articles</h4>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/Articles" class="nav-link">Articles</a></li>
+                    <li><a href="/Create" class="nav-link">Create</a></li>
+                    <li><a href="/#About-Us" class="nav-link">About Us</a></li>
+                </ul>
+            </nav>
+        </header>
+        <section class="section-heading">
+            <h1>Articles</h1>
+        </section>
+
+        <section class="search-options">
+            <div class="filter-sort">
+                <div class="filter-genre">
+                    <label for="genre-filter">Genre</label>
+                    <select name="genre-filter" id="genre-filter">
+                        <option value="">All</option>
+                        <option value="Action">Action</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Horror">Horror</option>
+                        <option value="Mystery">Mystery</option>
+                        <option value="Science Fiction">Science Fiction</option>
+                    </select>
+                </div>
+                <div class="sort-date">
+                    <label for="date-sort">Sort</label>
+                    <select name="date-sort" id="date-sort">
+                        <option value="-createdAt">Newest to oldest</option>
+                        <option value="createdAt">Oldest to Newest</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search">
+                <input class="search-bar" type="text" />
+                <button class="search-btn">
+                    <img src="./img/search-icon.svg" alt="search-icon" />
+                </button>
+            </div>
+        </section>
+
+        <section class="articles-grid">
+            <% if (articles.length > 0) { %> <% articles.forEach(article => { %>
+
+            <div class="article-card">
+                <div class="card-img">
+                    <img
+                        src="https://source.unsplash.com/random/1920x1200?<%= article.title %>"
+                        alt="card-image"
+                    />
+                </div>
+                <div class="card-text">
+                    <div class="title-genre">
+                        <h1><%= article.title %></h1>
+                        <h3><%= article.genre %></h3>
+                    </div>
+                    <h3 class="author">By <%= article.name %></h3>
+                    <p class="card-snippet"><%= article.snippet %></p>
+                </div>
+                <a href="/Articles/<%= article._id %>"
+                    ><button>Visit Here</button>
+                </a>
+            </div>
+            <% }) %> <% } %>
+        </section>
+        <section class="pagination">
+            <button id="prev-page-btn">Previous</button>
+            <h2 id="page-number">1</h2>
+            <button data-num="<%= numOfArticles %>" id="next-page-btn">
+                Next
+            </button>
+        </section>
+        <footer>
+            <div class="footer-container">
+                <div class="social-media-icons">
+                    <a class="icon-link" href="#"
+                        ><img
+                            class="icon-img"
+                            src="./img/linkedin-icon.png"
+                            alt="linkedin"
+                    /></a>
+                    <a class="icon-link" href="#"
+                        ><img
+                            class="icon-img"
+                            src="./img/github-icon.png"
+                            alt="linkedin"
+                    /></a>
+                    <a class="icon-link" href="#"
+                        ><img
+                            class="icon-img"
+                            src="./img/discord-icon.png"
+                            alt="linkedin"
+                    /></a>
+                </div>
+                <div class="footer-text">
+                    <h2>Made by Viresh Gupta</h2>
+                    <p>Copyrights Reserved 2022</p>
+                </div>
+            </div>
+        </footer>
+        <script>
+            const searchBtn = document.querySelector(".search-btn")
+            const searchBar = document.querySelector(".search-bar")
+            const genreFilter = document.querySelector("#genre-filter")
+            const dateSort = document.querySelector("#date-sort")
+
+            searchBtn.addEventListener("click", (e) => {
+                const queryString = window.location.search
+                const titleValue = searchBar.value
+                const filterValue = genreFilter.value
+                const sortValue = dateSort.value
+                const searchParams = new URLSearchParams(queryString)
+                searchParams.set("title", titleValue)
+                searchParams.set("genre", filterValue)
+                searchParams.set("sort", sortValue)
+                searchParams.set("page", String(1))
+                const endpoint = `/Articles?${searchParams.toString()}`
+                window.location.href = endpoint
+            })
+
+            const prevPageBtn = document.querySelector("#prev-page-btn")
+            const pageNumber = document.querySelector("#page-number")
+            const nextPageBtn = document.querySelector("#next-page-btn")
+
+            prevPageBtn.addEventListener("click", (e) => {
+                const searchParams = new URLSearchParams(window.location.search)
+                const curPage = Number(searchParams.get("page")) || 1
+                searchParams.set("page", String(curPage - 1))
+                const endpoint = `/Articles?${searchParams.toString()}`
+                console.log(endpoint)
+                window.location.href = endpoint
+            })
+            nextPageBtn.addEventListener("click", (e) => {
+                const searchParams = new URLSearchParams(window.location.search)
+                const curPage = Number(searchParams.get("page")) || 1
+                searchParams.set("page", String(curPage + 1))
+                const endpoint = `/Articles?${searchParams.toString()}`
+                console.log(endpoint)
+                window.location.href = endpoint
+            })
+            const searchParams = new URLSearchParams(window.location.search)
+            const curPgaeNumber = searchParams.get("page") || 1
+            pageNumber.textContent = curPgaeNumber
+            if (curPgaeNumber == 1) {
+                prevPageBtn.setAttribute("disabled", "disabled")
+                prevPageBtn.style =
+                    "background-color: lightgrey; color: black; cursor: not-allowed"
+            }
+            if (curPgaeNumber * 9 >= nextPageBtn.dataset.num) {
+                nextPageBtn.setAttribute("disabled", "disabled")
+                nextPageBtn.style =
+                    "background-color: lightgrey; color: black; cursor: not-allowed"
+            }
+        </script>
+    </body>
+</html>
